@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="教室英語十回合" />
+
+  <title>教室英語10回合對話練習｜PWA v1.3</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --primary: #315efb;
+      --primary-dark: #2447c9;
+      --success: #16794b;
+      --warning: #8a5600;
+      --danger: #b42318;
+      --info: #1f4f8f;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(31, 41, 55, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC",
+        "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    button, input, select { font: inherit; }
+
+    button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:disabled {
+      opacity: .48;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .primary:hover { background: var(--primary-dark); }
+
+    .secondary {
+      background: #eef2ff;
+      color: #273783;
+      font-weight: 700;
+    }
+
+    .ghost {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .danger {
+      background: #fff1f0;
+      color: var(--danger);
+      border: 1px solid #ffd2ce;
+    }
+
+    .wrap {
+      width: min(980px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 40px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff, #eef2ff);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(1.55rem, 4vw, 2.25rem);
+      margin: 0 0 8px;
+      line-height: 1.25;
+    }
+
+    h2 { margin-top: 0; }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .progress-row,
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .progress-row {
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .nav-row {
+      margin: 14px 0 4px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 280px;
+      justify-content: center;
+    }
+
+    .nav-center select {
+      width: auto;
+      min-width: 150px;
+    }
+
+    .progress {
+      height: 12px;
+      background: #e9edf5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0;
+      background: var(--primary);
+      transition: width .25s ease;
+    }
+
+    .dialogue {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .bubble {
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+    }
+
+    .teacher {
+      background: #eef4ff;
+      border-color: #c9d8ff;
+    }
+
+    .speaker {
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .english {
+      font-size: clamp(1.18rem, 3.8vw, 1.6rem);
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .chinese {
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .task {
+      margin-top: 10px;
+      color: #334155;
+      background: #fff7e6;
+      border: 1px solid #ffe0a6;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .feedback.show { display: block; }
+
+    .feedback.good {
+      background: #ecfdf3;
+      border-color: #abefc6;
+      color: var(--success);
+    }
+
+    .feedback.better {
+      background: #eef6ff;
+      border-color: #b8d6ff;
+      color: var(--info);
+    }
+
+    .feedback.retry {
+      background: #fff8eb;
+      border-color: #fedf89;
+      color: var(--warning);
+    }
+
+    .hint {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      border-radius: 12px;
+    }
+
+    .hint.show { display: block; }
+
+    .status {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-top: 8px;
+    }
+
+    .mic-on {
+      background: #fff1f0 !important;
+      color: var(--danger) !important;
+      border: 1px solid #ffd2ce;
+    }
+
+    .notice {
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff7e6;
+      border: 1px solid #ffe0a6;
+      color: #7c4a03;
+      margin-top: 12px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.35rem;
+      margin-top: 4px;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: .94rem;
+    }
+
+    .report-table th,
+    .report-table td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .report-table th { background: #f1f5f9; }
+
+    .hidden { display: none !important; }
+
+    footer {
+      color: var(--muted);
+      text-align: center;
+      font-size: .9rem;
+      padding-top: 10px;
+    }
+
+    @media (max-width: 760px) {
+      .settings-grid,
+      .report-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .controls button,
+      .nav-row button {
+        flex: 1 1 42%;
+      }
+
+      .nav-center {
+        order: -1;
+        flex-basis: 100%;
+      }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .hero, #settingsCard, #practiceCard, footer, .no-print { display: none !important; }
+      .wrap { width: 100%; padding: 0; }
+      #reportCard {
+        display: block !important;
+        border: 0;
+        box-shadow: none;
+        margin: 0;
+      }
+      .report-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>教室英語10回合對話練習</h1>
+      <p class="subtitle">國小六年級｜簡單單字、常用句型｜PWA v1.3</p>
+    </section>
+
+    <section class="card" id="settingsCard">
+      <h2>開始前設定</h2>
+      <div class="settings-grid">
+        <div>
+          <label for="studentCode">學生代碼</label>
+          <input id="studentCode" type="text" maxlength="20" placeholder="例如：601-07" />
+        </div>
+        <div>
+          <label for="replyMode">回饋模式</label>
+          <select id="replyMode">
+            <option value="both">文字＋語音</option>
+            <option value="text">只有文字</option>
+            <option value="voice">只有語音</option>
+          </select>
+        </div>
+        <div>
+          <label for="voiceRate">語音速度</label>
+          <select id="voiceRate">
+            <option value="0.82">慢速</option>
+            <option value="0.95" selected>一般</option>
+            <option value="1.08">稍快</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="startBtn">開始練習</button>
+        <button class="ghost" id="loadBtn">載入本機上次紀錄</button>
+      </div>
+
+      <div class="notice">
+        iPad直接開啟本機HTML時，系統可能重複詢問麥克風權限。這是瀏覽器的權限機制，網頁無法自行關閉。發布成HTTPS網址後通常會比較穩定。
+      </div>
+    </section>
+
+    <section class="card hidden" id="practiceCard">
+      <div class="progress-row">
+        <span id="roundLabel">第1題／共10題</span>
+        <span id="scoreLabel">首次答對：0</span>
+      </div>
+      <div class="progress"><div id="progressBar"></div></div>
+
+      <div class="nav-row">
+        <button class="ghost" id="prevBtn">← 上一題</button>
+        <div class="nav-center">
+          <label for="roundSelect" style="margin:0;">跳到：</label>
+          <select id="roundSelect" aria-label="選擇題目"></select>
+        </div>
+        <button class="ghost" id="nextNavBtn">下一題 →</button>
+      </div>
+
+      <div class="dialogue">
+        <div class="bubble teacher">
+          <div class="speaker">Teacher / Classmate</div>
+          <div class="english" id="promptEn"></div>
+          <div class="chinese" id="promptZh"></div>
+          <div class="task" id="taskZh"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="secondary" id="playPromptBtn">🔊 播放題目</button>
+        <button class="secondary" id="micBtn">🎤 開始語音輸入</button>
+        <button class="ghost" id="hintBtn">💡 提示（1/3）</button>
+      </div>
+
+      <div class="status" id="speechStatus">
+        語音輸入會持續聆聽，直到你按「停止語音輸入」。新的辨識文字會接在原有文字後面，不會蓋掉。
+      </div>
+
+      <div class="input-row">
+        <input id="answerInput" type="text" autocomplete="off"
+          placeholder="請輸入簡單英文回答" />
+        <button class="primary" id="submitBtn">送出回答</button>
+      </div>
+
+      <div class="hint" id="hintBox"></div>
+      <div class="feedback" id="feedbackBox"></div>
+
+      <div class="controls hidden" id="feedbackAudioControls">
+        <button class="secondary" id="replayFeedbackBtn">🔊 再聽一次回饋</button>
+      </div>
+
+      <div class="controls">
+        <button class="secondary" id="reportBtn">查看目前學習報告</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="reportCard">
+      <h2>個人學習報告</h2>
+      <p id="reportMeta"></p>
+
+      <div class="report-grid">
+        <div class="metric">已作答題數<strong id="mComplete">0/10</strong></div>
+        <div class="metric">首次答對率<strong id="mFirst">0%</strong></div>
+        <div class="metric">目前完成率<strong id="mFinal">0%</strong></div>
+        <div class="metric">提示使用次數<strong id="mHints">0</strong></div>
+      </div>
+
+      <div id="summaryText" style="margin-top:14px;"></div>
+
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>題號</th>
+            <th>任務</th>
+            <th>第一次回答</th>
+            <th>最後回答</th>
+            <th>結果</th>
+          </tr>
+        </thead>
+        <tbody id="reportBody"></tbody>
+      </table>
+
+      <div class="controls no-print">
+        <button class="ghost" id="backToPracticeBtn">返回練習</button>
+        <button class="primary" id="printBtn">下載／列印 PDF</button>
+        <button class="secondary" id="restartBtn">重新練習</button>
+        <button class="danger" id="clearBtn">清除本機紀錄</button>
+      </div>
+    </section>
+
+
+    <section class="card no-print" id="pwaCard">
+      <h2>安裝與更新</h2>
+      <p class="subtitle">從 GitHub Pages 等 HTTPS 網址開啟後，可將本工具加入主畫面並支援離線開啟。</p>
+      <div class="controls">
+        <button class="primary hidden" id="installBtn">安裝到裝置</button>
+        <button class="ghost" id="checkUpdateBtn">檢查更新</button>
+      </div>
+      <div class="status" id="pwaStatus">目前以一般網頁模式開啟。</div>
+    </section>
+
+    <footer>PWA v1.3 不使用外部AI API；以簡單句型、多答案規則與本機語音功能運作。</footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    const rounds = [
+      {
+        promptEn: "Good morning, class.",
+        promptZh: "同學們，早安。",
+        taskZh: "向老師說早安。",
+        hints: ["Good ...", "Good morning, ...", "Good morning, teacher."],
+        model: "Good morning, teacher.",
+        preferred: [/good morning( teacher)?$/i],
+        acceptable: [
+          { pattern: /^morning( teacher)?$/i, en: "That works. “Good morning” is a little clearer.", zh: "這樣可以。「Good morning」會更完整。" }
+        ],
+        successEn: "Good! That sounds natural.",
+        successZh: "很好！這樣說很自然。",
+        retryEn: "Try: “Good morning, teacher.”",
+        retryZh: "請試著說：「Good morning, teacher.」"
+      },
+      {
+        promptEn: "Please turn to page twenty.",
+        promptZh: "請翻到第20頁。",
+        taskZh: "告訴老師你已經翻到了。",
+        hints: ["Page ...", "Page twenty.", "I’m on page twenty."],
+        model: "I’m on page twenty.",
+        preferred: [/i('?m| am) on page (20|twenty)$/i],
+        acceptable: [
+          { pattern: /^(page )?(20|twenty)$/i, en: "Good. A full sentence is: “I’m on page twenty.”", zh: "可以。完整句子可說：「I’m on page twenty.」" },
+          { pattern: /^(ok|okay|got it)$/i, en: "That works, but “I’m on page twenty” is clearer.", zh: "這樣可以，但「I’m on page twenty」更清楚。" }
+        ],
+        successEn: "Good! You found the page.",
+        successZh: "很好！你已經找到頁數。",
+        retryEn: "Try: “I’m on page twenty.”",
+        retryZh: "請試著說：「I’m on page twenty.」"
+      },
+      {
+        promptEn: "Do you understand?",
+        promptZh: "你聽懂了嗎？",
+        taskZh: "表示不懂，請老師再說一次。",
+        hints: ["I don’t ...", "I don’t understand. Please ...", "I don’t understand. Could you say it again?"],
+        model: "I don’t understand. Could you say it again?",
+        preferred: [
+          /i don('?t| not) understand.*could you say it again/i,
+          /could you say it again.*i don('?t| not) understand/i
+        ],
+        acceptable: [
+          { pattern: /i don('?t| not) understand.*can you say it again/i, en: "Correct. “Could you say it again?” sounds a little more polite.", zh: "正確。「Could you say it again?」會更有禮貌。" },
+          { pattern: /(please say it again|say it again please)/i, en: "Good. You can also say: “Could you say it again?”", zh: "很好。也可以說：「Could you say it again?」" },
+          { pattern: /i don('?t| not) understand$/i, en: "Good start. Add: “Could you say it again?”", zh: "開頭很好。可以再加上：「Could you say it again?」" }
+        ],
+        successEn: "Good! You asked for help in a polite way.",
+        successZh: "很好！你用有禮貌的方式請老師幫忙。",
+        retryEn: "Try: “I don’t understand. Could you say it again?”",
+        retryZh: "請試著說：「I don’t understand. Could you say it again?」"
+      },
+      {
+        promptEn: "You need a pencil.",
+        promptZh: "你需要一枝鉛筆。",
+        taskZh: "向同學借一枝鉛筆。",
+        hints: ["Can I ...?", "Can I borrow ...?", "Can I borrow a pencil?"],
+        model: "Can I borrow a pencil?",
+        preferred: [/can i borrow (a|your) pencil$/i],
+        acceptable: [
+          { pattern: /may i borrow (a|your) pencil$/i, en: "Correct and polite. In daily talk, “Can I borrow a pencil?” is very common.", zh: "正確而且有禮貌。日常對話中「Can I borrow a pencil?」很常用。" },
+          { pattern: /could i borrow (a|your) pencil$/i, en: "Correct and polite. “Can I borrow a pencil?” is a little simpler.", zh: "正確而且有禮貌。「Can I borrow a pencil?」更簡單。" }
+        ],
+        successEn: "Good! That is a useful daily sentence.",
+        successZh: "很好！這是生活中很實用的句子。",
+        retryEn: "Try: “Can I borrow a pencil?”",
+        retryZh: "請試著說：「Can I borrow a pencil?」"
+      },
+      {
+        promptEn: "Can I borrow your eraser?",
+        promptZh: "我可以借你的橡皮擦嗎？",
+        taskZh: "答應同學，並把橡皮擦給他。",
+        hints: ["Sure.", "Sure. Here ...", "Sure. Here you are."],
+        model: "Sure. Here you are.",
+        preferred: [/sure.*here you are/i],
+        acceptable: [
+          { pattern: /^(sure|of course|yes)$/i, en: "Good. Add “Here you are” when you give it to your classmate.", zh: "很好。把東西交給同學時，可以再加上「Here you are」。" },
+          { pattern: /^here you are$/i, en: "Good. You can say: “Sure. Here you are.”", zh: "很好。也可以完整說：「Sure. Here you are.」" }
+        ],
+        successEn: "Good! That is friendly and clear.",
+        successZh: "很好！這樣說友善又清楚。",
+        retryEn: "Try: “Sure. Here you are.”",
+        retryZh: "請試著說：「Sure. Here you are.」"
+      },
+      {
+        promptEn: "What does this word mean?",
+        promptZh: "這個字是什麼意思？",
+        taskZh: "表示你不知道，請老師解釋。",
+        hints: ["I don’t ...", "I don’t know. Can you ...?", "I don’t know. Could you explain it?"],
+        model: "I don’t know. Could you explain it?",
+        preferred: [
+          /i don('?t| not) know.*could you explain it/i,
+          /i('?m| am) not sure.*could you explain it/i
+        ],
+        acceptable: [
+          { pattern: /(can you explain it|can you explain this)/i, en: "Correct and common. “Could you explain it?” sounds a little more polite.", zh: "正確而且常用。「Could you explain it?」會更有禮貌。" },
+          { pattern: /(please explain it|please explain this)/i, en: "Correct. You can also say: “Could you explain it?”", zh: "正確。也可以說：「Could you explain it?」" },
+          { pattern: /i don('?t| not) know$/i, en: "Good start. Add: “Could you explain it?”", zh: "開頭很好。可以再加上：「Could you explain it?」" }
+        ],
+        errors: [
+          { pattern: /explain me/i, en: "Use “explain it to me,” not “explain me.”", zh: "要說「explain it to me」，不要說「explain me」。" }
+        ],
+        successEn: "Good! You asked the teacher to help.",
+        successZh: "很好！你主動請老師幫忙。",
+        retryEn: "Try: “I don’t know. Could you explain it?”",
+        retryZh: "請試著說：「I don’t know. Could you explain it?」"
+      },
+      {
+        promptEn: "Please work with a partner.",
+        promptZh: "請和一位同學一起做。",
+        taskZh: "邀請同學一起做。",
+        hints: ["Let’s ...", "Let’s work ...", "Let’s work together."],
+        model: "Let’s work together.",
+        preferred: [/let('?s| us) work together$/i],
+        acceptable: [
+          { pattern: /let('?s| us) do it together$/i, en: "Correct. “Let’s work together” is a very useful classroom sentence.", zh: "正確。「Let’s work together」是很實用的教室句子。" },
+          { pattern: /work with me/i, en: "That works. “Let’s work together” sounds more friendly.", zh: "這樣可以。「Let’s work together」聽起來更友善。" }
+        ],
+        successEn: "Good! That is simple and useful.",
+        successZh: "很好！這句簡單又實用。",
+        retryEn: "Try: “Let’s work together.”",
+        retryZh: "請試著說：「Let’s work together.」"
+      },
+      {
+        promptEn: "I can’t see the board.",
+        promptZh: "我看不到黑板。",
+        taskZh: "請前面的同學移動一下。",
+        hints: ["Can you ...?", "Can you move ...?", "Can you move a little, please?"],
+        model: "Can you move a little, please?",
+        preferred: [/can you move (a little|please|a little please)/i],
+        acceptable: [
+          { pattern: /could you move/i, en: "Correct and polite. “Can you move a little, please?” is simple and common.", zh: "正確而且有禮貌。「Can you move a little, please?」簡單又常用。" },
+          { pattern: /please move/i, en: "This works, but “Can you move a little, please?” sounds softer.", zh: "這樣可以，但「Can you move a little, please?」語氣比較柔和。" }
+        ],
+        successEn: "Good! You asked in a polite way.",
+        successZh: "很好！你有禮貌地提出請求。",
+        retryEn: "Try: “Can you move a little, please?”",
+        retryZh: "請試著說：「Can you move a little, please?」"
+      },
+      {
+        promptEn: "Do you have a question?",
+        promptZh: "你有問題嗎？",
+        taskZh: "問老師今天的作業。",
+        hints: ["What is ...?", "What is the homework?", "What is the homework today?"],
+        model: "What is the homework today?",
+        preferred: [/what('?s| is) the homework( for)? today$/i],
+        acceptable: [
+          { pattern: /do we have homework( today)?/i, en: "Correct. “What is the homework today?” asks for the homework details.", zh: "正確。「What is the homework today?」可以直接問作業內容。" },
+          { pattern: /what('?s| is) the homework$/i, en: "Good. You can add “today.”", zh: "很好。也可以加上「today」。" }
+        ],
+        successEn: "Good! That is a useful question.",
+        successZh: "很好！這是一個很實用的問題。",
+        retryEn: "Try: “What is the homework today?”",
+        retryZh: "請試著說：「What is the homework today?」"
+      },
+      {
+        promptEn: "Class is over. See you tomorrow.",
+        promptZh: "下課了，明天見。",
+        taskZh: "向老師道別。",
+        hints: ["See you ...", "See you tomorrow.", "Thank you. See you tomorrow."],
+        model: "Thank you. See you tomorrow.",
+        preferred: [/thank you.*see you tomorrow/i],
+        acceptable: [
+          { pattern: /^see you tomorrow$/i, en: "Good. You can add “Thank you” to be more polite.", zh: "很好。可以加上「Thank you」更有禮貌。" },
+          { pattern: /^(bye|goodbye)( teacher)?$/i, en: "That works. “See you tomorrow” fits this situation better.", zh: "這樣可以。「See you tomorrow」更符合這個情境。" }
+        ],
+        successEn: "Great! You finished all ten classroom talks.",
+        successZh: "太好了！你完成了十個教室對話。",
+        retryEn: "Try: “Thank you. See you tomorrow.”",
+        retryZh: "請試著說：「Thank you. See you tomorrow.」"
+      }
+    ];
+
+    const state = {
+      current: 0,
+      hintCount: 0,
+      records: [],
+      completed: false,
+      lastFeedback: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    const els = {
+      settingsCard: $("settingsCard"),
+      practiceCard: $("practiceCard"),
+      reportCard: $("reportCard"),
+      studentCode: $("studentCode"),
+      replyMode: $("replyMode"),
+      voiceRate: $("voiceRate"),
+      startBtn: $("startBtn"),
+      loadBtn: $("loadBtn"),
+      roundLabel: $("roundLabel"),
+      scoreLabel: $("scoreLabel"),
+      progressBar: $("progressBar"),
+      roundSelect: $("roundSelect"),
+      prevBtn: $("prevBtn"),
+      nextNavBtn: $("nextNavBtn"),
+      promptEn: $("promptEn"),
+      promptZh: $("promptZh"),
+      taskZh: $("taskZh"),
+      playPromptBtn: $("playPromptBtn"),
+      micBtn: $("micBtn"),
+      hintBtn: $("hintBtn"),
+      speechStatus: $("speechStatus"),
+      answerInput: $("answerInput"),
+      submitBtn: $("submitBtn"),
+      hintBox: $("hintBox"),
+      feedbackBox: $("feedbackBox"),
+      feedbackAudioControls: $("feedbackAudioControls"),
+      replayFeedbackBtn: $("replayFeedbackBtn"),
+      reportBtn: $("reportBtn"),
+      reportMeta: $("reportMeta"),
+      mComplete: $("mComplete"),
+      mFirst: $("mFirst"),
+      mFinal: $("mFinal"),
+      mHints: $("mHints"),
+      summaryText: $("summaryText"),
+      reportBody: $("reportBody"),
+      backToPracticeBtn: $("backToPracticeBtn"),
+      printBtn: $("printBtn"),
+      restartBtn: $("restartBtn"),
+      clearBtn: $("clearBtn")
+    };
+
+    let availableVoices = [];
+    let recognition = null;
+    let isListening = false;
+    let keepListening = false;
+    let baseTextBeforeListening = "";
+    let sessionFinalText = "";
+
+    function normalize(text) {
+      return String(text || "")
+        .toLowerCase()
+        .replace(/[’‘]/g, "'")
+        .replace(/[.,!?;:"]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function containsChinese(text) {
+      return /[\u3400-\u9fff]/.test(text);
+    }
+
+    function refreshVoices() {
+      availableVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    }
+
+    if ("speechSynthesis" in window) {
+      refreshVoices();
+      window.speechSynthesis.onvoiceschanged = refreshVoices;
+    }
+
+    function chooseVoice(lang) {
+      refreshVoices();
+      const prefix = lang.toLowerCase().split("-")[0];
+      const sameLocale = availableVoices.filter(v => v.lang.toLowerCase() === lang.toLowerCase());
+      const sameLanguage = availableVoices.filter(v => v.lang.toLowerCase().startsWith(prefix));
+      const preferredNames = lang.startsWith("en")
+        ? ["Samantha", "Ava", "Evan", "Daniel", "Karen", "Google US English", "Microsoft Aria", "Microsoft Jenny"]
+        : ["Mei-Jia", "Ting-Ting", "Google 國語", "Microsoft HsiaoChen", "Microsoft Yating"];
+
+      const candidates = [...sameLocale, ...sameLanguage];
+      return preferredNames
+        .map(name => candidates.find(v => v.name.includes(name)))
+        .find(Boolean) || candidates[0] || null;
+    }
+
+    function speakOne(text, lang) {
+      return new Promise(resolve => {
+        if (!("speechSynthesis" in window) || !text) {
+          resolve();
+          return;
+        }
+
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = lang;
+        utter.rate = Number(els.voiceRate.value || 0.95);
+        utter.pitch = 1;
+        const voice = chooseVoice(lang);
+        if (voice) utter.voice = voice;
+        utter.onend = resolve;
+        utter.onerror = resolve;
+        window.speechSynthesis.speak(utter);
+      });
+    }
+
+    async function speakSequence(items) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+
+      for (const item of items) {
+        await speakOne(item.text, item.lang);
+        await new Promise(resolve => setTimeout(resolve, 180));
+      }
+    }
+
+    function getRecord(index = state.current) {
+      if (!state.records[index]) {
+        state.records[index] = {
+          firstAnswer: "",
+          finalAnswer: "",
+          draft: "",
+          firstResult: "",
+          currentResult: "",
+          completed: false,
+          attempts: 0,
+          hintLevel: 0,
+          usedHint: false,
+          feedbackNote: ""
+        };
+      }
+      return state.records[index];
+    }
+
+    function calculateFirstCorrect() {
+      return state.records.filter(r => r && r.firstResult === "preferred").length;
+    }
+
+    function calculateAnswered() {
+      return state.records.filter(r => r && r.attempts > 0).length;
+    }
+
+    function calculateCompleted() {
+      return state.records.filter(r => r && r.completed).length;
+    }
+
+    function resetState() {
+      stopListening();
+      state.current = 0;
+      state.hintCount = 0;
+      state.records = [];
+      state.completed = false;
+      state.lastFeedback = null;
+    }
+
+    function fillRoundSelect() {
+      els.roundSelect.innerHTML = "";
+      rounds.forEach((round, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = `第 ${index + 1} 題`;
+        els.roundSelect.appendChild(option);
+      });
+    }
+
+    function startPractice() {
+      const code = els.studentCode.value.trim();
+      if (!code) {
+        alert("請先輸入學生代碼。");
+        els.studentCode.focus();
+        return;
+      }
+
+      resetState();
+      els.settingsCard.classList.add("hidden");
+      els.reportCard.classList.add("hidden");
+      els.practiceCard.classList.remove("hidden");
+      renderRound();
+    }
+
+    function saveDraft() {
+      const record = getRecord();
+      record.draft = els.answerInput.value.trim();
+    }
+
+    function goToRound(index) {
+      saveDraft();
+      stopListening();
+      state.current = Math.max(0, Math.min(rounds.length - 1, Number(index)));
+      renderRound();
+      saveProgress();
+    }
+
+    function renderRound() {
+      const r = rounds[state.current];
+      const record = getRecord();
+
+      els.roundLabel.textContent = `第${state.current + 1}題／共${rounds.length}題`;
+      els.scoreLabel.textContent = `首次答對：${calculateFirstCorrect()}`;
+      els.progressBar.style.width = `${((state.current + 1) / rounds.length) * 100}%`;
+      els.roundSelect.value = String(state.current);
+      els.prevBtn.disabled = state.current === 0;
+      els.nextNavBtn.disabled = state.current === rounds.length - 1;
+
+      els.promptEn.textContent = r.promptEn;
+      els.promptZh.textContent = r.promptZh;
+      els.taskZh.textContent = `任務：${r.taskZh}`;
+      els.answerInput.value = record.draft || record.finalAnswer || "";
+
+      state.lastFeedback = null;
+      els.feedbackBox.className = "feedback";
+      els.feedbackBox.innerHTML = "";
+      els.feedbackAudioControls.classList.add("hidden");
+
+      renderHint(record.hintLevel);
+      els.answerInput.focus();
+    }
+
+    function renderHint(level) {
+      const record = getRecord();
+      const r = rounds[state.current];
+      record.hintLevel = level;
+
+      if (level <= 0) {
+        els.hintBox.className = "hint";
+        els.hintBox.innerHTML = "";
+        els.hintBtn.textContent = "💡 提示（1/3）";
+        els.hintBtn.disabled = false;
+        return;
+      }
+
+      const labels = ["單字提示", "句型提示", "完整示範"];
+      els.hintBox.className = "hint show";
+      els.hintBox.innerHTML =
+        `<strong>第 ${level} 階段：${labels[level - 1]}</strong><br>
+         ${r.hints[level - 1]}
+         <div class="status">${level < 3 ? "需要更多幫助時，再按一次提示。" : "這是最後一階段提示。"}</div>`;
+      els.hintBtn.textContent = level < 3 ? `💡 下一階段提示（${level + 1}/3）` : "💡 已顯示完整提示";
+      els.hintBtn.disabled = level >= 3;
+    }
+
+    function showHint() {
+      const record = getRecord();
+
+      if (!record.usedHint) {
+        record.usedHint = true;
+        state.hintCount += 1;
+      }
+
+      renderHint(Math.min(3, record.hintLevel + 1));
+      saveProgress();
+    }
+
+    function evaluateAnswer(answer, round) {
+      const clean = normalize(answer);
+
+      if (!clean) {
+        return {
+          status: "empty",
+          en: "Please type or say an answer.",
+          zh: "請先輸入或說出答案。"
+        };
+      }
+
+      if (round.errors) {
+        const error = round.errors.find(item => item.pattern.test(clean));
+        if (error) {
+          return { status: "incorrect", en: error.en, zh: error.zh };
+        }
+      }
+
+      if (round.preferred.some(pattern => pattern.test(clean))) {
+        return {
+          status: "preferred",
+          en: round.successEn,
+          zh: round.successZh
+        };
+      }
+
+      const acceptable = round.acceptable.find(item => item.pattern.test(clean));
+      if (acceptable) {
+        return {
+          status: "acceptable",
+          en: acceptable.en,
+          zh: acceptable.zh
+        };
+      }
+
+      return {
+        status: "incorrect",
+        en: round.retryEn,
+        zh: round.retryZh
+      };
+    }
+
+    function deliverFeedback(english, chinese, type) {
+      const mode = els.replyMode.value;
+      state.lastFeedback = { english, chinese };
+
+      const cssType = type === "preferred" ? "good" : type === "acceptable" ? "better" : "retry";
+      els.feedbackBox.className = `feedback show ${cssType}`;
+
+      if (mode === "text" || mode === "both") {
+        els.feedbackBox.innerHTML =
+          `<div class="english" style="font-size:1.12rem">${english}</div>
+           <div class="chinese">${chinese}</div>`;
+      } else {
+        els.feedbackBox.innerHTML = "<div>🔊 已播放語音回饋；可按下方按鈕再聽一次。</div>";
+      }
+
+      if (mode === "voice" || mode === "both") {
+        speakSequence([
+          { text: english, lang: "en-US" },
+          { text: chinese, lang: "zh-TW" }
+        ]);
+        els.feedbackAudioControls.classList.remove("hidden");
+      } else {
+        els.feedbackAudioControls.classList.add("hidden");
+      }
+    }
+
+    function replayLastFeedback() {
+      if (!state.lastFeedback) return;
+      speakSequence([
+        { text: state.lastFeedback.english, lang: "en-US" },
+        { text: state.lastFeedback.chinese, lang: "zh-TW" }
+      ]);
+    }
+
+    function submitAnswer() {
+      stopListening();
+
+      const answer = els.answerInput.value.trim();
+      const round = rounds[state.current];
+      const record = getRecord();
+      const result = evaluateAnswer(answer, round);
+
+      if (result.status === "empty") {
+        deliverFeedback(result.en, result.zh, "incorrect");
+        return;
+      }
+
+      record.attempts += 1;
+      record.draft = answer;
+      record.finalAnswer = answer;
+
+      if (record.attempts === 1) {
+        record.firstAnswer = answer;
+        record.firstResult = result.status;
+      }
+
+      record.currentResult = result.status;
+      record.completed = result.status === "preferred" || result.status === "acceptable";
+      record.feedbackNote = `${result.en} / ${result.zh}`;
+
+      deliverFeedback(result.en, result.zh, result.status);
+      els.scoreLabel.textContent = `首次答對：${calculateFirstCorrect()}`;
+      saveProgress();
+    }
+
+    function initRecognition() {
+      if (recognition) return true;
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        els.speechStatus.textContent = "這個瀏覽器不支援網頁語音辨識，請改用文字輸入。";
+        return false;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = true;
+      recognition.continuous = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isListening = true;
+        els.micBtn.textContent = "⏹ 停止語音輸入";
+        els.micBtn.classList.add("mic-on");
+        els.speechStatus.textContent = "正在聆聽英文。說完後請按「停止語音輸入」。";
+      };
+
+      recognition.onresult = event => {
+        let newFinal = "";
+        let interim = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i += 1) {
+          const transcript = event.results[i][0].transcript.trim();
+
+          if (containsChinese(transcript)) {
+            els.speechStatus.textContent = "剛才被辨識成中文，因此沒有加入答案。請再說一次英文。";
+            continue;
+          }
+
+          if (event.results[i].isFinal) {
+            newFinal += `${transcript} `;
+          } else {
+            interim += `${transcript} `;
+          }
+        }
+
+        if (newFinal.trim()) {
+          sessionFinalText = `${sessionFinalText} ${newFinal}`.replace(/\s+/g, " ").trim();
+        }
+
+        els.answerInput.value = [baseTextBeforeListening, sessionFinalText, interim.trim()]
+          .filter(Boolean)
+          .join(" ")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        if (!interim.trim()) {
+          els.speechStatus.textContent = "已加入語音內容。可繼續說下一句，或按「停止語音輸入」。";
+        }
+      };
+
+      recognition.onerror = event => {
+        if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          els.speechStatus.textContent = "麥克風權限未開啟。請在瀏覽器或iPad設定中允許麥克風。";
+          keepListening = false;
+        } else if (event.error === "no-speech") {
+          els.speechStatus.textContent = "沒有聽到聲音，會自動繼續聆聽。";
+        } else if (event.error !== "aborted") {
+          els.speechStatus.textContent = `語音辨識暫停：${event.error}。`;
+        }
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+
+        if (keepListening) {
+          setTimeout(() => {
+            try {
+              recognition.start();
+            } catch (error) {
+              keepListening = false;
+              updateMicButton();
+            }
+          }, 350);
+        } else {
+          updateMicButton();
+        }
+      };
+
+      return true;
+    }
+
+    function startListening() {
+      if (!initRecognition()) return;
+
+      baseTextBeforeListening = els.answerInput.value.trim();
+      sessionFinalText = "";
+      keepListening = true;
+
+      try {
+        recognition.start();
+      } catch (error) {
+        els.speechStatus.textContent = "語音辨識正在啟動，請稍等一下。";
+      }
+    }
+
+    function stopListening() {
+      keepListening = false;
+
+      if (recognition && isListening) {
+        try {
+          recognition.stop();
+        } catch (error) {
+          updateMicButton();
+        }
+      } else {
+        updateMicButton();
+      }
+    }
+
+    function toggleListening() {
+      if (keepListening || isListening) {
+        stopListening();
+      } else {
+        startListening();
+      }
+    }
+
+    function updateMicButton() {
+      isListening = false;
+      els.micBtn.textContent = "🎤 開始語音輸入";
+      els.micBtn.classList.remove("mic-on");
+      if (!keepListening) {
+        els.speechStatus.textContent = "語音輸入已停止。再次按下可接續原有文字，不會覆蓋。";
+      }
+    }
+
+    function buildReport() {
+      saveDraft();
+
+      const answered = calculateAnswered();
+      const completed = calculateCompleted();
+      const firstCorrect = calculateFirstCorrect();
+      const firstRate = answered ? Math.round((firstCorrect / answered) * 100) : 0;
+      const finalRate = Math.round((completed / rounds.length) * 100);
+      const date = new Date().toLocaleString("zh-TW");
+      const code = els.studentCode.value.trim();
+
+      els.reportMeta.textContent =
+        `學生代碼：${code}｜情境：教室內常用對話｜產生時間：${date}`;
+      els.mComplete.textContent = `${answered}/${rounds.length}`;
+      els.mFirst.textContent = `${firstRate}%`;
+      els.mFinal.textContent = `${finalRate}%`;
+      els.mHints.textContent = String(state.hintCount);
+
+      let summary = "";
+      if (completed === rounds.length && firstRate >= 80) {
+        summary = "英文回饋：Great job! You can use simple English in many classroom situations.<br>中文說明：表現很好，你已能在多種教室情境中使用簡單英文。";
+      } else if (completed >= 7) {
+        summary = "英文回饋：Good work! Practice the sentences that needed help.<br>中文說明：整體表現良好，請再練習需要提示或修正的句子。";
+      } else {
+        summary = "英文回饋：Keep practicing. Use short and simple sentences first.<br>中文說明：請繼續練習，先把簡短、常用的句子說熟。";
+      }
+
+      const nextDate = new Date();
+      nextDate.setDate(nextDate.getDate() + (firstRate >= 80 ? 7 : firstRate >= 60 ? 3 : 1));
+      summary += `<p><strong>建議下次複習：</strong>${nextDate.toLocaleDateString("zh-TW")}</p>`;
+      els.summaryText.innerHTML = summary;
+
+      els.reportBody.innerHTML = "";
+      rounds.forEach((round, index) => {
+        const record = state.records[index];
+        const tr = document.createElement("tr");
+
+        let resultText = "尚未作答";
+        if (record && record.attempts > 0) {
+          if (record.currentResult === "preferred") resultText = "自然正確";
+          else if (record.currentResult === "acceptable") resultText = "可以使用，另有較自然說法";
+          else resultText = "需要再練習";
+        }
+
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${escapeHtml(round.taskZh)}</td>
+          <td>${escapeHtml(record?.firstAnswer || "—")}</td>
+          <td>${escapeHtml(record?.finalAnswer || record?.draft || "—")}</td>
+          <td>${resultText}</td>`;
+        els.reportBody.appendChild(tr);
+      });
+    }
+
+    function showReport() {
+      stopListening();
+      buildReport();
+      els.practiceCard.classList.add("hidden");
+      els.reportCard.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      saveProgress();
+    }
+
+    function backToPractice() {
+      els.reportCard.classList.add("hidden");
+      els.practiceCard.classList.remove("hidden");
+      renderRound();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function saveProgress() {
+      saveDraft();
+      const payload = {
+        studentCode: els.studentCode.value.trim(),
+        replyMode: els.replyMode.value,
+        voiceRate: els.voiceRate.value,
+        state,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem("classroomEnglishV12", JSON.stringify(payload));
+    }
+
+    function loadProgress() {
+      const raw = localStorage.getItem("classroomEnglishV12");
+      if (!raw) {
+        alert("找不到v1.2的本機紀錄。");
+        return;
+      }
+
+      try {
+        const data = JSON.parse(raw);
+        els.studentCode.value = data.studentCode || "";
+        els.replyMode.value = data.replyMode || "both";
+        els.voiceRate.value = data.voiceRate || "0.95";
+        Object.assign(state, data.state || {});
+        alert(`已載入 ${new Date(data.savedAt).toLocaleString("zh-TW")} 的紀錄。`);
+        els.settingsCard.classList.add("hidden");
+        els.reportCard.classList.add("hidden");
+        els.practiceCard.classList.remove("hidden");
+        renderRound();
+      } catch (error) {
+        alert("紀錄格式無法讀取。");
+      }
+    }
+
+    function clearProgress() {
+      if (!confirm("確定要清除這台裝置上的v1.2練習紀錄嗎？")) return;
+      localStorage.removeItem("classroomEnglishV12");
+      alert("本機紀錄已清除。");
+    }
+
+    function restart() {
+      resetState();
+      els.reportCard.classList.add("hidden");
+      els.practiceCard.classList.remove("hidden");
+      renderRound();
+      saveProgress();
+    }
+
+    fillRoundSelect();
+
+    els.startBtn.addEventListener("click", startPractice);
+    els.loadBtn.addEventListener("click", loadProgress);
+    els.prevBtn.addEventListener("click", () => goToRound(state.current - 1));
+    els.nextNavBtn.addEventListener("click", () => goToRound(state.current + 1));
+    els.roundSelect.addEventListener("change", event => goToRound(Number(event.target.value)));
+    els.playPromptBtn.addEventListener("click", () =>
+      speakSequence([{ text: rounds[state.current].promptEn, lang: "en-US" }])
+    );
+    els.micBtn.addEventListener("click", toggleListening);
+    els.hintBtn.addEventListener("click", showHint);
+    els.submitBtn.addEventListener("click", submitAnswer);
+    els.replayFeedbackBtn.addEventListener("click", replayLastFeedback);
+    els.reportBtn.addEventListener("click", showReport);
+    els.backToPracticeBtn.addEventListener("click", backToPractice);
+    els.printBtn.addEventListener("click", () => window.print());
+    els.restartBtn.addEventListener("click", restart);
+    els.clearBtn.addEventListener("click", clearProgress);
+
+    els.answerInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") submitAnswer();
+    });
+
+    window.addEventListener("beforeunload", () => {
+      try { saveProgress(); } catch (error) {}
+      stopListening();
+    });
+
+    // ---- PWA support ----
+    const installBtn = document.getElementById("installBtn");
+    const checkUpdateBtn = document.getElementById("checkUpdateBtn");
+    const pwaStatus = document.getElementById("pwaStatus");
+    let deferredInstallPrompt = null;
+    let swRegistration = null;
+
+    function isStandaloneMode() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    function updatePwaStatus(message) {
+      if (pwaStatus) pwaStatus.textContent = message;
+    }
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installBtn?.classList.remove("hidden");
+      updatePwaStatus("此裝置可安裝本工具。");
+    });
+
+    installBtn?.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) {
+        updatePwaStatus("若使用 iPad / iPhone，請在 Safari 點「分享」→「加入主畫面」。");
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installBtn.classList.add("hidden");
+      updatePwaStatus(choice.outcome === "accepted" ? "已完成安裝。" : "已取消安裝。");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      installBtn?.classList.add("hidden");
+      updatePwaStatus("已安裝為 PWA。");
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try {
+          swRegistration = await navigator.serviceWorker.register("./service-worker.js");
+          if (isStandaloneMode()) {
+            updatePwaStatus("目前以已安裝的 PWA 模式開啟，可離線使用主要功能。");
+          } else {
+            updatePwaStatus("PWA 已就緒。iPad / iPhone 請用 Safari 的「加入主畫面」安裝。");
+          }
+
+          swRegistration.addEventListener("updatefound", () => {
+            const worker = swRegistration.installing;
+            if (!worker) return;
+            worker.addEventListener("statechange", () => {
+              if (worker.state === "installed" && navigator.serviceWorker.controller) {
+                updatePwaStatus("有新版可用，重新整理頁面即可更新。");
+              }
+            });
+          });
+        } catch (error) {
+          updatePwaStatus("PWA 註冊失敗；請確認是以 HTTPS 網址開啟，而不是直接開本機 HTML。");
+        }
+      });
+    } else {
+      updatePwaStatus("此瀏覽器不支援 Service Worker，仍可使用一般網頁功能。");
+    }
+
+    checkUpdateBtn?.addEventListener("click", async () => {
+      if (!swRegistration) {
+        updatePwaStatus("尚未完成 PWA 註冊。請確認以 HTTPS 網址開啟。");
+        return;
+      }
+      try {
+        await swRegistration.update();
+        updatePwaStatus("已檢查更新；若有新版，重新整理後會載入。");
+      } catch (error) {
+        updatePwaStatus("檢查更新失敗，請稍後再試。");
+      }
+    });
+
+  </script>
+</body>
+</html>
